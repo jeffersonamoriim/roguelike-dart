@@ -3,6 +3,9 @@ import 'package:roguelike/celula.dart';
 import 'package:roguelike/criatura.dart';
 import 'package:roguelike/mundo.dart';
 import 'package:roguelike/ponto_2d.dart';
+import 'package:roguelike/lobo.dart';
+import 'package:roguelike/carneiro.dart';
+import 'package:roguelike/tesouro.dart';
 
 // Classe que criará mundos seguindo o padrão Builder
 class MundoBuilder {
@@ -13,10 +16,17 @@ class MundoBuilder {
   int largura, altura;
   List<List<Celula>> mapa;
   List<Criatura> criaturas;
+  List<Lobo> lobos;
+  List<Carneiro> carneiros;
+  List<Tesouro> tesouros;
+
 
   // Construtor padrão
   MundoBuilder(this.largura, this.altura) {
     criaturas = [];
+    lobos = [];
+    carneiros = [];
+    tesouros = [];
   }
 
   // Método para preencher o mapa (passo 1 da heurística)
@@ -59,7 +69,7 @@ class MundoBuilder {
 
   // Método que adiciona criaturas no mapa
   // @quantidadeCriaturas : número de criaturas que queremos colocar no mapa
-  MundoBuilder criarCriaturas(int quantidadeCriaturas) {
+  MundoBuilder criarCriaturas(int quantidadeCriaturas, String SIMBOLO_CRIATURAS) { //PODE SER LOBO ou CARNEIRO, VEM DO ROGUELIKE
     // cria um número aleatório
     Random aleatorio = Random();
     int x, y;
@@ -71,14 +81,50 @@ class MundoBuilder {
         y = aleatorio.nextInt(altura);
       } while (mapa[x][y].bloqueado);
 
+      if(SIMBOLO_CRIATURAS == Criatura.SIMBOLO_CRIATURA_CARNEIRO){
+        carneiros.add(Carneiro(Ponto2D(x, y), Carneiro.SIMBOLO_CRIATURA_CARNEIRO));
+        
+      }else{
+        lobos.add(Lobo(Ponto2D(x, y), Lobo.SIMBOLO_CRIATURA_LOBO)); //CRIA LOBO
+      }
+
       // Adiciona a criatura na lista de criaturas
-      criaturas.add(Criatura(Ponto2D(x, y), Criatura.SIMBOLO_CRIATURA));
+      //criaturas.add(Criatura(Ponto2D(x, y), SIMBOLO_CRIATURAS));
+      //criaturas.add(Criatura(Ponto2D(x, y), Criatura.SIMBOLO_CRIATURA_CARNEIRO));
+      //criaturas.add(Criatura(Ponto2D(x, y), Criatura.SIMBOLO_CRIATURA_LOBO));
     }
     return this;
   }
 
+
+  MundoBuilder criarTesouro(int quantidadeTesouro, String SIMBOLO_CRIATURAS) { 
+    // cria um número aleatório
+    Random aleatorio = Random();
+    int x, y;
+    // Cria N criaturas
+    for (int i = 0; i < quantidadeTesouro; i++) {
+      
+      do {
+        x = aleatorio.nextInt(largura);
+        y = aleatorio.nextInt(altura);
+      } while (mapa[x][y].bloqueado);
+
+     
+        tesouros.add(Tesouro(Ponto2D(x, y), Tesouro.SIMBOLO_TESOUSO, Tesouro.VALOR_TESOURO));
+        
+     
+
+    
+    }
+    return this;
+
+  }
+
+
+
+
   // Retorna um Mundo
   Mundo build() {
-    return Mundo(mapa, criaturas);
+    return Mundo(mapa, lobos, carneiros, tesouros);
   }
 }

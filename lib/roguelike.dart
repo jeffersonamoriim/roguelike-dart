@@ -2,19 +2,28 @@ import 'package:roguelike/jogador.dart';
 import 'package:roguelike/mundo.dart';
 import 'package:roguelike/mundo_builder.dart';
 import 'package:roguelike/ponto_2d.dart';
+import 'package:roguelike/criatura.dart';
+import 'package:roguelike/tesouro.dart';
+
 
 // Classe que define como o jogo funciona
 class Roguelike {
   // Constantes
   static final String SIMBOLO_PAREDE = "#";
-  static final int QUANTIDADE_CRIATUDAS = 60;
+  static final int QUANTIDADE_CRIATURAS = 20;
   static final int QUANTIDADE_VIDAS = 2;
   static final double FATOR_PROFUNDIDADE = 2.0;
+   static final int QUANTIDADE_TESOURO = 10;
+ 
+  
+
 
   // Variáveis
   Mundo _mundo;
   Jogador _jogador;
+  
   int _largura, _altura;
+
 
   // Construtor padrão
   Roguelike(this._largura, this._altura) {
@@ -28,11 +37,19 @@ class Roguelike {
     posicao.x = _largura ~/ 2;
     posicao.y = _altura ~/ 2;
 
+
+
+
     // Define a quantidade de passos
     int passos = ((_largura * _altura) * FATOR_PROFUNDIDADE).toInt();
 
     // Cria o jogador
     _jogador = Jogador(posicao, Jogador.SIMBOLO_JOGADOR, QUANTIDADE_VIDAS);
+   // _tesouro = Tesouro(posicaoTesouro, Tesouro.SIMBOLO_TESOUSO, Tesouro.VALOR_TESOURO);
+
+    // Cria o Tesouro
+
+    
 
     // Cria o mapa do jogo
     // 1. Preenche mapa
@@ -41,11 +58,15 @@ class Roguelike {
     _mundo = MundoBuilder(_largura, _altura)
         .preencher(SIMBOLO_PAREDE, true)
         .criarCaminho(posicao.x, posicao.y, passos)
-        .criarCriaturas(QUANTIDADE_CRIATUDAS)
+        .criarCriaturas(QUANTIDADE_CRIATURAS, Criatura.SIMBOLO_CRIATURA_CARNEIRO)  //cria carneiro   
+        .criarCriaturas(QUANTIDADE_CRIATURAS, Criatura.SIMBOLO_CRIATURA_LOBO)   //cria lobo
+        .criarTesouro(QUANTIDADE_TESOURO, Tesouro.SIMBOLO_TESOUSO)     //cria criatura padrão
         .build();
 
     // Coloca o jogador dentro do mundo
     _mundo.jogador = _jogador;
+    
+    
   }
 
   // Executa a lógica do jogo
@@ -55,7 +76,7 @@ class Roguelike {
     while (_jogador.vivo()) {
       // Desenha o mundo
       _mundo.desenhar();
-
+      
       // Atualiza todas as criaturas e jogador
       _mundo.atualizar();
     }
